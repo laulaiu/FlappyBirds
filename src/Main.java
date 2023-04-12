@@ -51,16 +51,12 @@ public class Main extends PApplet {
         birdpic3 = loadImage(bird_assets3);
         basepic = loadImage(base_assets);
 
-        pipeX = new int[5];
-        pipeY = new int[pipeX.length];
+
         birdY = 120;
         birdX = 120;
         gravity = 1.5;
+        recoveryPipe();
 
-        for(int i=0; i<pipeX.length; i++){
-            pipeX[i] = width+ 200*i;
-            pipeY[i] = (int)random(-300,-20);
-        }
     }
     int game = 1;
 
@@ -77,30 +73,40 @@ public class Main extends PApplet {
         }
 
         fill(0);
-        text("FR: "+frameRateLastNanos,100,40);
+        text("FR: "+(int)frameRateLastNanos,100,40);
     }
 
+    private void recoveryPipe(){
+        pipeX = new int[5];
+        pipeY = new int[pipeX.length];
+
+        for(int i=0; i<pipeX.length; i++){
+            pipeX[i] = width+ 200*i;
+            pipeY[i] = (int)random(-300,-20);
+        }
+    }
     private void pipe() {
         for(int i=0; i<pipeX.length; i++){
 
             image(pipebot_pic, pipeX[i],(float) pipeY[i] , pipetop_pic.width*1.3f,pipetop_pic.height*1.3f);
             image(pipetop_pic,pipeX[i],(float) (pipeY[i] + height -110) , pipebot_pic.width*1.3f,pipebot_pic.height*1.3f);
-            fill(0);
+
+/*            fill(0);
             text("Y-top: "+(int)(pipeY[i] + pipebot_pic.height*1.3f),
                     pipeX[i],
                     pipeY[i] + pipebot_pic.height*1.3f+2);
             text("Y-bot: "+(float) (pipeY[i] + height -110),
                     pipeX[i],
-                    (float) (pipeY[i] + height -110));
+                    (float) (pipeY[i] + height -110));*/
+
             pipeX[i] -= 4;
             if(pipeX[i] < -200 ){
                 pipeX[i] = width;
             }
-            square(pipeX[i],pipeY[i] + pipebot_pic.height*1.3f,15);
 
             if( (birdX+(birdpic[0].width/2) > pipeX[i]) & (birdX-(birdpic[0].width/2) < pipeX[i] + pipetop_pic.width)){
                 if( (birdY+(birdpic[0].height) > (float) (pipeY[i] + height -110) ) | (birdY < pipeY[i] + pipebot_pic.height*1.3f-5) ){
-                    game = -1;
+                    stopGame();
                 }
             }
 
@@ -124,10 +130,10 @@ public class Main extends PApplet {
 
         textSize(12);
         fill(0);
-        text("keyCode: "+keycodePress, 40, 30);
-        text("Vky: "+Vky, 40, 40);
-        text("gravity: "+gravity, 40, 50);
-        text("birdY: "+birdY, 40, 60);
+        text("keyCode: "+(int)keycodePress, 40, 30);
+        text("Vky: "+(int)Vky, 40, 40);
+        text("gravity: "+(int)gravity, 40, 50);
+        text("birdY: "+(int)birdY, 40, 60);
 
     }
 
@@ -140,13 +146,32 @@ public class Main extends PApplet {
     @Override
     public void keyPressed(KeyEvent event) {
         if(event.getKeyCode() == 10){
-            game = 0;
+            startGame();
         }
         keycodePress = event.getKeyCode();
         if(event.getKeyCode() == 38){
             Vky = -15;
         }
 
+    }
+
+    private void stopGame(){
+        game = -1;
+    }
+
+    private void startGame(){
+        if(game != 0){
+/*            for(int a=0;a< pipeX.length;a++ ){
+                pipeX[a] = width+200;
+                birdY = 120;
+            }*/
+            recoveryPipe();
+            game=0;
+        }
+    }
+    private void resetGame(){
+        stopGame();
+        startGame();;
     }
 
     public void backGame(){
